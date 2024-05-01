@@ -12,8 +12,6 @@ import urllib.request
 
 from Helpers.Helpers import convert_webp_to_png, go_to_url
 
-
-
 def main():
     # Get urls of the items in x Shein order. Convert the data in a dictionery sku:name from the dataframe
     data =  pd.read_csv('image_links.csv', sep=';')
@@ -31,7 +29,7 @@ def main():
         # Go to url and close coupon dialog
         go_to_url(driver, url)
         if coupon:        
-            close_coupon_dialog(driver)
+            close_dialogs(driver)
             coupon = False
 
         sleep(2)
@@ -41,22 +39,28 @@ def main():
     convert_webp_to_png()
 
 
-def close_coupon_dialog(driver:WebDriver):          
-    try:
-        coupon = driver.find_elements(By.XPATH,' /html/body/div[1]/div[2]/div/div[1]/div/div/div[2]/div[2]/span')          
-        coupon[0].click()
-    except Exception as err:
-        # If puzzle appeared, try to close it
+def close_dialogs(driver:WebDriver):        
+    try:                                          
         close_puzzle_dialog(driver)
-        coupon = driver.find_elements(By.XPATH,' /html/body/div[1]/div[2]/div/div[1]/div/div/div[2]/div[2]/span')          
-        coupon[0].click()
-
+        close_coupon_dialog(driver)
+    except Exception as err:
+        print('Maybe puzzle appeared a second time')
+        close_puzzle_dialog(driver)
+        close_coupon_dialog(driver)
+        # coupon = driver.find_elements(By.XPATH,' /html/body/div[1]/div[2]/div/div[1]/div/div/div[2]/div[2]/span')          
+        # coupon[0].click()
 
 def close_puzzle_dialog(driver:WebDriver):
     puzzle_close_button = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, 'geetest_close'))
+        EC.element_to_be_clickable((By.CLASS_NAME, 'geetest_close'))
     )
     puzzle_close_button.click()  
+
+def close_coupon_dialog(driver:WebDriver):
+    puzzle_close_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, "//*[contains(@class, 'sui-icon-common__wrap') and contains(@class, 'she-close')]"))
+    )
+    puzzle_close_button.click() 
  
 
 def download_images(driver:WebDriver, image_name:str):
@@ -66,7 +70,7 @@ def download_images(driver:WebDriver, image_name:str):
         driver.find_element(By.XPATH, f' /html/body/div[1]/div[1]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div[1]').click()        
     except:
         try:                                                    
-            close_coupon_dialog(driver)
+            close_puzzle_dialog(driver)
             driver.find_element(By.XPATH, f' /html/body/div[1]/div[1]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div[1]').click()
         except Exception as err:
             print(err)
