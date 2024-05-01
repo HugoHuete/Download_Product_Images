@@ -10,14 +10,12 @@ from PIL import Image
 from glob import glob
 import os
 
-from Helpers.Helpers import convert_webp_to_png, go_to_url
+from Helpers.Helpers import convert_webp_to_png, get_data_from_csv, go_to_url
 
 
 def main():
     # Get urls of the items in x Shein order. Convert the data in a dictionery sku:name from the dataframe
-    data =  pd.read_csv('image_links.csv', sep=';')
-    data = data.to_dict('list')
-    images = list(zip(data['sku'], data['name'], data['link']))
+    data =  get_data_from_csv()
 
     edge_options = Options()
     edge_options.add_argument('--log-level=3')
@@ -25,7 +23,7 @@ def main():
     driver.implicitly_wait(15)
     driver.maximize_window()
 
-    for sku, name, url in images:
+    for sku, name, url in data:
         print(url)
         sleep(3)
         go_to_url(driver, url)        

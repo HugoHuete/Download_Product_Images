@@ -1,15 +1,17 @@
 from selenium.webdriver.remote.webdriver import WebDriver
 from PIL import Image
 from glob import glob
+
 import os
+import pandas as pd
 
+def get_data_from_csv():
+    data =  pd.read_csv('image_links.csv', sep=';')
+    data = data.to_dict('list')
+    images = list(zip(data['sku'], data['name'], data['link']))
 
-def convert_webp_to_png():
-    webp_images = glob("images/*.webp")
-    for img in webp_images:
-        converted_img_name = img.split(sep="\\")[1].split(sep=".webp")[0] + ".png"  # Extrae solamente en el nombre del archivo
-        Image.open(img).convert("RGB").save("images\\" + converted_img_name,"png")
-        os.remove(img)
+    return images
+
 
 def go_to_url(driver:WebDriver, url:str):
     while True:
@@ -18,3 +20,11 @@ def go_to_url(driver:WebDriver, url:str):
             break
         except:
             continue
+
+def convert_webp_to_png():
+    webp_images = glob("images/*.webp")
+    for img in webp_images:
+        converted_img_name = img.split(sep="\\")[1].split(sep=".webp")[0] + ".png"  # Extrae solamente en el nombre del archivo
+        Image.open(img).convert("RGB").save("images\\" + converted_img_name,"png")
+        os.remove(img)
+
