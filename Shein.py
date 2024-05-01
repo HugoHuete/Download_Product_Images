@@ -3,12 +3,15 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.edge.options import Options
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 import pandas as pd
 import urllib.request
-from PIL import Image
-from glob import glob
-import os
+
+from Helpers.Helpers import convert_webp_to_png, go_to_url
+
 
 
 def main():
@@ -20,7 +23,7 @@ def main():
     edge_options = Options()
     edge_options.add_argument('--log-level=3')
     driver = webdriver.Edge(options=edge_options)
-    driver.implicitly_wait(15)
+    driver.implicitly_wait(10)
     driver.maximize_window()
 
     coupon = True
@@ -38,33 +41,45 @@ def main():
     convert_webp_to_png()
 
 
-def go_to_url(driver, url):
-    while True:
-        try:
-            driver.get(url)
-            break
-        except:
-            continue
+def close_coupon_dialog(driver:WebDriver):          
+    try:
+        coupon = driver.find_elements(By.XPATH,' /html/body/div[1]/div[2]/div/div[1]/div/div/div[2]/div[2]/span')          
+        coupon[0].click()
+    except Exception as err:
+        # If puzzle appeared, try to close it
+        close_puzzle_dialog(driver)
+        coupon = driver.find_elements(By.XPATH,' /html/body/div[1]/div[2]/div/div[1]/div/div/div[2]/div[2]/span')          
+        coupon[0].click()
 
-def close_coupon_dialog(driver):          
-    input()
-    coupon = driver.find_elements(By.XPATH,' /html/body/div[1]/div[2]/div/div[1]/div/div/div[2]/div[2]/span')          
-    coupon[0].click()
 
+def close_puzzle_dialog(driver:WebDriver):
+    puzzle_close_button = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'geetest_close'))
+    )
+    puzzle_close_button.click()  
  
 
-def download_images(driver, image_name):
+def download_images(driver:WebDriver, image_name:str):
     sleep(3)
-    # Zoom image                         
-    driver.find_element(By.XPATH, f' /html/body/div[1]/div[1]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div[1]').click()        
+    # Zoom image 
+    try:                                  
+        driver.find_element(By.XPATH, f' /html/body/div[1]/div[1]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div[1]').click()        
+    except:
+        try:                                                    
+            close_coupon_dialog(driver)
+            driver.find_element(By.XPATH, f' /html/body/div[1]/div[1]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div[1]').click()
+        except Exception as err:
+            print(err)
+            input("Revisar")
+            pass  
+                      
 
-    possible_div_numbers = [14, 16, 15, 17]
+    possible_div_numbers = [14, 16, 15, 17, 18,19]
     for div_number in possible_div_numbers:                                           
         miniatures = driver.find_elements(By.XPATH, f'/html/body/div[{div_number}]/div/div/div[2]/div/div[1]/ul/li')
         if len(miniatures) > 0:
             break
     
-
     if len(miniatures) == 0:
         input('*****************Revisar que paso*****************')
 
@@ -84,12 +99,7 @@ def download_images(driver, image_name):
         sleep(1)                                   
 
 
-def convert_webp_to_png():
-    webp_images = glob("images/*.webp")
-    for img in webp_images:
-        converted_img_name = img.split(sep="\\")[1].split(sep=".webp")[0] + ".png"  # Extrae solamente en el nombre del archivo
-        Image.open(img).convert("RGB").save("images\\" + converted_img_name,"png")
-        os.remove(img)
+
 
 
 if __name__ == '__main__':

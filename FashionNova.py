@@ -10,6 +10,8 @@ from PIL import Image
 from glob import glob
 import os
 
+from Helpers.Helpers import convert_webp_to_png, go_to_url
+
 
 def main():
     # Get urls of the items in x Shein order. Convert the data in a dictionery sku:name from the dataframe
@@ -31,15 +33,6 @@ def main():
     
     driver.close()
     convert_webp_to_png()
-
-
-def go_to_url(driver, url):
-    while True:
-        try:
-            driver.get(url)
-            break
-        except:
-            continue
 
 
 def download_images(driver, image_name):
@@ -68,12 +61,7 @@ def download_images(driver, image_name):
         close_button.click()
 
 
-def convert_webp_to_png():
-    webp_images = glob("images/*.webp")
-    for img in webp_images:
-        converted_img_name = img.split(sep="\\")[1].split(sep=".webp")[0] + ".png"  # Extrae solamente en el nombre del archivo
-        Image.open(img).convert("RGB").save("images\\" + converted_img_name,"png")
-        os.remove(img)
+
 
 
 if __name__ == '__main__':
