@@ -36,16 +36,16 @@ def main():
 
 
 def close_dialogs(driver:WebDriver):   
-    try:                                          
-        puzzle_close_button = wait_till_clickable(driver, By.CLASS_NAME, 'geetest_close')
-        puzzle_close_button.click()
-        coupon_close_button = wait_till_clickable(driver, By.XPATH, "//*[contains(@class, 'sui-icon-common__wrap') and contains(@class, 'she-close')]")
+    try:                        
+        # puzzle_close_button = wait_till_clickable(driver, By.CLASS_NAME, 'geetest_close')
+        # puzzle_close_button.click()                                              
+        coupon_close_button = wait_till_clickable(driver, By.XPATH, "//*[contains(@class, 'sui-icon-common__wrap') and contains(@class, 'she-close') and contains(@class, 'homepage-she-close')]")
         coupon_close_button.click()
     except:
         print('Maybe puzzle appeared a second time')
-        puzzle_close_button = wait_till_clickable(driver, By.CLASS_NAME, 'geetest_close')
-        puzzle_close_button.click()
-        coupon_close_button = wait_till_clickable(driver, By.XPATH, "//*[contains(@class, 'sui-icon-common__wrap') and contains(@class, 'she-close')]")
+        # puzzle_close_button = wait_till_clickable(driver, By.CLASS_NAME, 'geetest_close')
+        # puzzle_close_button.click()
+        coupon_close_button = wait_till_clickable(driver, By.XPATH, "//*[contains(@class, 'sui-icon-common__wrap') and contains(@class, 'she-close') and contains(@class, 'homepage-she-close')]")
         coupon_close_button.click()
 
 
@@ -59,7 +59,7 @@ def download_images(driver:WebDriver, image_name:str):
             # Puzzle can reaper here again but in another location
             input('Puzzle reappeared.')
             # puzzle_close_button = GetAllElements(driver, By.CLASS_NAME, 'geetest_close')
-            # puzzle_close_button[1].click()
+            # puzzle_close_button[1].click() 
             driver.find_element(By.XPATH, f' /html/body/div[1]/div[1]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div[1]').click()
         except Exception as err:
             print(err)
@@ -68,7 +68,7 @@ def download_images(driver:WebDriver, image_name:str):
 
     # miniatures = GetAllElements(driver, By.CLASS_NAME, 'productimg-extend__thumbnails-item')
                       
-    possible_div_numbers = [14, 16, 15, 17, 18,19]
+    possible_div_numbers = [18, 16, 17, 13, 14, 15, 19, 20]
     for div_number in possible_div_numbers:                                           
         miniatures = driver.find_elements(By.XPATH, f'/html/body/div[{div_number}]/div/div/div[2]/div/div[1]/ul/li')
         if len(miniatures) > 0:
@@ -84,6 +84,7 @@ def download_images(driver:WebDriver, image_name:str):
     for miniature in miniatures:
         hover = ActionChains(driver).move_to_element(miniature)
         hover.perform()                                  
+        # full_image_url = driver.find_element(By.XPATH, f'/html/body/div[{div_number}]/div/div/div[2]/div/div[2]/div[2]/img').get_attribute("src")
         full_image_url = driver.find_element(By.XPATH, f'/html/body/div[{div_number}]/div/div/div[2]/div/div[2]/div[1]/img').get_attribute("src")
         full_name = 'images\\' + image_name +' (' + str(counter) + ').webp'
 

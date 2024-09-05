@@ -10,7 +10,7 @@ from PIL import Image
 from glob import glob
 import os
 
-from Helpers.Helpers import convert_webp_to_png, get_data_from_csv, go_to_url
+from Helpers.Helpers import convert_webp_to_png, get_data_from_csv, go_to_url, wait_till_clickable
 
 
 def main():
@@ -36,6 +36,8 @@ def main():
 def download_images(driver, image_name):
     sleep(2)
     try:
+        coupon_close_bt = wait_till_clickable(driver, By.XPATH, '//*[@id="bx-element-1848842-VuRLVB0"]/button')
+        coupon_close_bt.click()
         driver.find_element(By.XPATH, f"/html/body/div[1]/div[1]/div[1]/form/button").click()        
     except:
         pass
@@ -45,10 +47,11 @@ def download_images(driver, image_name):
     counter = 0
     for miniature in miniatures:              
         miniature.click()
-        driver.find_element(By.XPATH, f'//*[@id="MainContent"]/div[1]/div[1]/div/div/div[3]/div[{counter + 1}]').click() # Click to full image
-        close_button = driver.find_element(By.XPATH, f"/html/body/div[14]/div[2]/div[2]/div/button[1]")
-
-        image_xpath = f"/html/body/div[14]/div[2]/div[1]/div[2]/div/img"
+        driver.find_element(By.XPATH, f'//*[@id="MainContent"]/div[1]/div[1]/div/div/div[3]/div[{counter + 1}]').click() # Click to full image    
+        close_button = driver.find_element(By.XPATH, f"/html/body/div[18]/div[2]/div[2]/div/button[1]")
+        # input("Revisar") #!Quitar                      
+                        
+        image_xpath = f"/html/body/div[18]/div[2]/div[1]/div[2]/div/img"
 
         full_image_url = driver.find_element(By.XPATH, image_xpath).get_attribute("src")
         full_name = 'images\\' + image_name + ' (' + str(counter) + ').webp'
