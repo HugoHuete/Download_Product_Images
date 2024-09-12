@@ -52,7 +52,7 @@ def close_dialogs(driver:WebDriver):
 
 def download_images(driver:WebDriver, image_name:str):
     # Zoom image 
-    try:                 
+    try:                                  
         driver.find_element(By.XPATH, f' /html/body/div[1]/div[1]/div/div[1]/div/div[2]/div[1]/div/div[1]/div/div[2]/div[1]').click()   
     except:
         try:                              
