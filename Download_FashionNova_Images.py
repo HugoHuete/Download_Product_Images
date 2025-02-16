@@ -10,7 +10,7 @@ from PIL import Image
 from glob import glob
 import os
 
-from Helpers.Helpers import convert_webp_to_png, get_data_from_csv, go_to_url, wait_till_clickable
+from FashionNova.Helpers import convert_webp_to_png, get_data_from_csv, go_to_url, wait_till_clickable
 
 
 def main():
